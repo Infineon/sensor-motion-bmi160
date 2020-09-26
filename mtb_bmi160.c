@@ -37,7 +37,7 @@ extern "C"
 
 static cyhal_i2c_t *i2c = NULL;
 
-static unsigned int i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len)
+static int8_t i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len)
 {
     CY_ASSERT(len + 1 < I2C_WRITE_BUFFER_LENGTH);
     uint8_t buf[I2C_WRITE_BUFFER_LENGTH];
@@ -49,17 +49,21 @@ static unsigned int i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t 
 
     cy_rslt_t result = cyhal_i2c_master_write(i2c, dev_addr, buf, len+1, I2C_TIMEOUT, true);
 
-    return result;
+    return (CY_RSLT_SUCCESS == result)
+        ? BMI160_OK
+        : BMI160_E_COM_FAIL;
 }
 
-static unsigned int i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len)
+static int8_t i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len)
 {
     cy_rslt_t result = cyhal_i2c_master_write(i2c, dev_addr, &reg_addr, 1, I2C_TIMEOUT, false);
 
     if (CY_RSLT_SUCCESS == result)
         result = cyhal_i2c_master_read(i2c, dev_addr, data, len, I2C_TIMEOUT, true);
 
-    return result;
+    return (CY_RSLT_SUCCESS == result)
+        ? BMI160_OK
+        : BMI160_E_COM_FAIL;
 }
 
 static void delay_wrapper(uint32_t ms)
@@ -148,7 +152,7 @@ cy_rslt_t mtb_bmi160_selftest(mtb_bmi160_t *obj)
 cy_rslt_t _mtb_bmi160_config_int(cyhal_gpio_t *intpin, cyhal_gpio_t pin, bool init, uint8_t intr_priority, cyhal_gpio_event_t event, cyhal_gpio_event_callback_t callback, void *callback_arg)
 {
     cy_rslt_t result = CY_RSLT_SUCCESS;
-    
+
     if (NULL == callback)
     {
         cyhal_gpio_free(pin);
@@ -174,7 +178,7 @@ cy_rslt_t _mtb_bmi160_config_int(cyhal_gpio_t *intpin, cyhal_gpio_t pin, bool in
 cy_rslt_t mtb_bmi160_config_int(mtb_bmi160_t *obj, struct bmi160_int_settg *intsettings, cyhal_gpio_t pin, uint8_t intr_priority, cyhal_gpio_event_t event, cyhal_gpio_event_callback_t callback, void *callback_arg)
 {
     cy_rslt_t result;
-    
+
     if (obj->intpin1 == pin)
     {
         result = _mtb_bmi160_config_int(&(obj->intpin1), pin, false, intr_priority, event, callback, callback_arg);

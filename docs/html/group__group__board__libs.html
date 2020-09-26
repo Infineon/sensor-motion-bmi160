@@ -102,7 +102,7 @@ $(document).ready(function(){initNavTree('group__group__board__libs.html','');})
 <dd>
 BMI160 support requires delays. If the RTOS_AWARE component is set or CY_RTOS_AWARE is defined, the HAL driver will defer to the RTOS for delays. Because of this, it is not safe to call any functions other than <a class="el" href="group__group__board__libs.html#gac8f26d8dfa22eaef5a39303409133dfc">mtb_bmi160_init_i2c</a> until after the RTOS scheduler has started.</dd>
 <dd>
-There is a known issue with the BMI160 endianness detection. Any code referencing the structures defined in the BMI160 driver should have this file first in any includes.</dd></dl>
+There is a known issue with the BMI160 endianness detection. Any code referencing the structures defined in the BMI160 driver should have this header file, mtb_bmi160.h, first in any includes.</dd></dl>
 <h1><a class="anchor" id="subsection_board_libs_snippets"></a>
 Code snippets</h1>
 <h2><a class="anchor" id="subsection_board_libs_snippet_1"></a>

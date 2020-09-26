@@ -9,6 +9,8 @@ This library provides functions for interfacing with the BMI-160 I2C/SPI 16-bit 
 * API for testing IMU
 
 ### What Changed?
+#### v1.0.1
+* Fixed case of referenced repo URL to avoid warning
 #### v1.0.0
 * Initial release
 
@@ -17,10 +19,12 @@ This version of the motion sensor library was validated for compatibility with t
 
 | Software and Tools                        | Version |
 | :---                                      | :----:  |
-| ModusToolbox Software Environment         | 2.0     |
-| GCC Compiler                              | 7.4     |
-| IAR Compiler                              | 8.32    |
+| ModusToolbox Software Environment         | 2.1     |
+| GCC Compiler                              | 9.2     |
+| IAR Compiler                              | 8.4     |
 | ARM Compiler 6                            | 6.11    |
+
+Minimum required ModusToolbox Software Environment: v2.0
 
 ### More information
 

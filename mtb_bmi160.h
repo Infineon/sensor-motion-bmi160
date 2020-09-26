@@ -40,8 +40,8 @@
 * \ref mtb_bmi160_init_i2c until after the RTOS scheduler has started.
 *
 * \note There is a known issue with the BMI160 endianness detection. Any code
-* referencing the structures defined in the BMI160 driver should have this
-* file first in any includes.
+* referencing the structures defined in the BMI160 driver should have this header
+* file, mtb_bmi160.h, first in any includes.
 *
 * \section subsection_board_libs_snippets Code snippets
 * \subsection subsection_board_libs_snippet_1 Snippet 1: Simple initialization with I2C.
