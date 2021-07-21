@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***********************************************************************************************//**
  * \file mtb_bmi160.h
  *
  * Description: This file is the public interface of the BMI160 motion sensor.
- *******************************************************************************
+ ***************************************************************************************************
  * \copyright
- * Copyright 2018-2020 Cypress Semiconductor Corporation
+ * Copyright 2018-2021 Cypress Semiconductor Corporation
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,46 +18,47 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *******************************************************************************/
+ **************************************************************************************************/
 
 #pragma once
 
 /**
-* \addtogroup group_board_libs Motion Sensor
-* \{
-* Basic set of APIs for interacting with the BMI160 motion sensor. This
-* provides basic initialization and access to to the basic accelerometer &
-* gyroscope data. It also provides access to the base BMI160 driver for full
-* control. For more information about the motion sensor, see:
-* https://github.com/BoschSensortec/BMI160_driver
-*
-* \note Currently, this library only supports being used for a single instance
-* of this device.
-*
-* \note BMI160 support requires delays. If the RTOS_AWARE component is set or
-* CY_RTOS_AWARE is defined, the HAL driver will defer to the RTOS for delays.
-* Because of this, it is not safe to call any functions other than
-* \ref mtb_bmi160_init_i2c until after the RTOS scheduler has started.
-*
-* \note There is a known issue with the BMI160 endianness detection. Any code
-* referencing the structures defined in the BMI160 driver should have this header
-* file, mtb_bmi160.h, first in any includes.
-*
-* \section subsection_board_libs_snippets Code snippets
-* \subsection subsection_board_libs_snippet_1 Snippet 1: Simple initialization with I2C.
-* The following snippet initializes an I2C instance and the BMI160, then reads
-* from the BMI160.
-* \snippet mtb_imu_bmi160_example.c snippet_bmi160_i2c_init
-*
-* \subsection subsection_board_libs_snippet_2 Snippet 2: BMI160 interrupt configuration.
-* The following snippet demonstrates how to configure a BMI160 interrupt.
-* \snippet mtb_imu_bmi160_example.c snippet_bmi160_configure_interrupt
-*/
+ * \addtogroup group_board_libs Motion Sensor
+ * \{
+ * Basic set of APIs for interacting with the BMI160 motion sensor. This
+ * provides basic initialization and access to to the basic accelerometer &
+ * gyroscope data. It also provides access to the base BMI160 driver for full
+ * control. For more information about the motion sensor, see:
+ * https://github.com/BoschSensortec/BMI160_driver
+ *
+ * \note Currently, this library only supports being used for a single instance
+ * of this device.
+ *
+ * \note BMI160 support requires delays. If the RTOS_AWARE component is set or
+ * CY_RTOS_AWARE is defined, the HAL driver will defer to the RTOS for delays.
+ * Because of this, it is not safe to call any functions other than
+ * \ref mtb_bmi160_init_i2c until after the RTOS scheduler has started.
+ *
+ * \note There is a known issue with the BMI160 endianness detection. Any code
+ * referencing the structures defined in the BMI160 driver should have this header
+ * file, mtb_bmi160.h, first in any includes.
+ *
+ * \section subsection_board_libs_snippets Code snippets
+ * \subsection subsection_board_libs_snippet_1 Snippet 1: Simple initialization with I2C.
+ * The following snippet initializes an I2C instance and the BMI160, then reads
+ * from the BMI160.
+ * \snippet mtb_bmi160_example.c snippet_bmi160_i2c_init
+ *
+ * \subsection subsection_board_libs_snippet_2 Snippet 2: BMI160 interrupt configuration.
+ * The following snippet demonstrates how to configure a BMI160 interrupt.
+ * \snippet mtb_bmi160_example.c snippet_bmi160_configure_interrupt
+ */
 
 #include "bmi160.h"
 #include "cy_result.h"
 #include "cyhal_gpio.h"
 #include "cyhal_i2c.h"
+#include "cyhal_spi.h"
 
 #if defined(__cplusplus)
 extern "C"
@@ -68,8 +69,8 @@ extern "C"
 typedef struct
 {
     struct bmi160_dev sensor;
-    cyhal_gpio_t intpin1;
-    cyhal_gpio_t intpin2;
+    cyhal_gpio_t      intpin1;
+    cyhal_gpio_t      intpin2;
 } mtb_bmi160_t;
 
 /** Structure holding the accelerometer and gyroscope data read from the device. */
@@ -84,13 +85,18 @@ typedef struct
 /** Enumeration used for selecting I2C address. */
 typedef enum
 {
-    MTB_BMI160_DEFAULT_ADDRESS = BMI160_I2C_ADDR,
+    MTB_BMI160_DEFAULT_ADDRESS   = BMI160_I2C_ADDR,
     MTB_BMI160_SECONDARY_ADDRESS = BMI160_AUX_BMM150_I2C_ADDR
-}mtb_bmi160_address_t;
+} mtb_bmi160_address_t;
 
 /** An attempt was made to configure too many gpio pins as interrupts. */
-#define CYHAL_BMI160_RSLT_ERR_ADDITIONAL_INT_PIN                 \
-    (CYHAL_RSLT_CREATE(CY_RSLT_TYPE_ERROR, CY_RSLT_MODULE_BOARD_HARDWARE_BMI160, 0x100))
+#define MTB_BMI160_RSLT_ERR_INSUFFICIENT_INT_PINS                 \
+    (CY_RSLT_CREATE(CY_RSLT_TYPE_ERROR, CY_RSLT_MODULE_BOARD_HARDWARE_BMI160, 0x100))
+
+/** \cond INTERNAL */
+/** Backwards compatability define. Use MTB_BMI160_RSLT_ERR_INSUFFICIENT_INT_PINS instead **/
+#define CYHAL_BMI160_RSLT_ERR_ADDITIONAL_INT_PIN    (MTB_BMI160_RSLT_ERR_ADDITIONAL_INT_PIN)
+/** \endcond */
 
 /**
  * Initialize the IMU for I2C communication. Then applies the default
@@ -103,7 +109,21 @@ typedef enum
  * @param[in] address   BMI160 I2C address, set by hardware implementation.
  * @return CY_RSLT_SUCCESS if properly initialized, else an error indicating what went wrong.
  */
-cy_rslt_t mtb_bmi160_init_i2c(mtb_bmi160_t *obj, cyhal_i2c_t *inst, mtb_bmi160_address_t address);
+cy_rslt_t mtb_bmi160_init_i2c(mtb_bmi160_t* obj, cyhal_i2c_t* inst, mtb_bmi160_address_t address);
+
+/**
+ * Initialize the sensor for SPI communication. Then applies the default configuration settings
+ * for the accelerometer & gyroscope. NOTE: The SPI slave select pin (\p spi_ss) is expected to
+ * be controlled by this driver, not the SPI block itself. This allows the driver to issue
+ * multiple read/write requests back to back.
+ * See: \ref mtb_bmi160_config_default()
+ * @param[in] obj       Pointer to a BMI160 object. The caller must allocate the memory
+ *  for this object but the init function will initialize its contents.
+ * @param[in] inst      SPI instance to use for communicating with the BMI160 sensor.
+ * @param[in] spi_ss    SPI slave select pin to use for communicating with the BMI160 sensor.
+ * @return CY_RSLT_SUCCESS if properly initialized, else an error indicating what went wrong.
+ */
+cy_rslt_t mtb_bmi160_init_spi(mtb_bmi160_t* obj, cyhal_spi_t* inst, cyhal_gpio_t spi_ss);
 
 /**
  * Configure the motion sensor to a default mode with both accelerometer & gyroscope enabled
@@ -112,7 +132,7 @@ cy_rslt_t mtb_bmi160_init_i2c(mtb_bmi160_t *obj, cyhal_i2c_t *inst, mtb_bmi160_a
  * @param[in] obj  Pointer to a BMI160 object.
  * @return CY_RSLT_SUCCESS if properly initialized, else an error indicating what went wrong.
  */
-cy_rslt_t mtb_bmi160_config_default(mtb_bmi160_t *obj);
+cy_rslt_t mtb_bmi160_config_default(mtb_bmi160_t* obj);
 
 /**
  * Reads the current accelerometer & gyroscope data from the motion sensor.
@@ -120,7 +140,7 @@ cy_rslt_t mtb_bmi160_config_default(mtb_bmi160_t *obj);
  * @param[out] sensor_data The accelerometer & gyroscope data read from the motion sensor
  * @return CY_RSLT_SUCCESS if properly initialized, else an error indicating what went wrong.
  */
-cy_rslt_t mtb_bmi160_read(mtb_bmi160_t *obj, mtb_bmi160_data_t *sensor_data);
+cy_rslt_t mtb_bmi160_read(mtb_bmi160_t* obj, mtb_bmi160_data_t* sensor_data);
 
 /**
  * Gets access to the base motion sensor data. This allows for direct manipulation of the
@@ -129,7 +149,7 @@ cy_rslt_t mtb_bmi160_read(mtb_bmi160_t *obj, mtb_bmi160_data_t *sensor_data);
  * @param[in] obj  Pointer to a BMI160 object.
  * @return pointer to the BMI160 configuration structure.
  */
-struct bmi160_dev *mtb_bmi160_get(mtb_bmi160_t *obj);
+struct bmi160_dev* mtb_bmi160_get(mtb_bmi160_t* obj);
 
 /**
  * Performs both accelerometer and gyro self tests. Note these tests cause a soft reset
@@ -138,7 +158,7 @@ struct bmi160_dev *mtb_bmi160_get(mtb_bmi160_t *obj);
  * @param[in] obj  Pointer to a BMI160 object.
  * @return CY_RSLT_SUCCESS if self tests pass, else an error indicating what went wrong.
  */
-cy_rslt_t mtb_bmi160_selftest(mtb_bmi160_t *obj);
+cy_rslt_t mtb_bmi160_selftest(mtb_bmi160_t* obj);
 
 /**
  * Configure a GPIO pin as an interrupt for the BMI160.
@@ -150,17 +170,21 @@ cy_rslt_t mtb_bmi160_selftest(mtb_bmi160_t *obj);
  * @param[in] pin           Which pin to configure as interrupt
  * @param[in] intr_priority The priority for NVIC interrupt events
  * @param[in] event         The type of interrupt event
- * @param[in] callback      The function to call when the specified event happens. Pass NULL to unregister the handler.
- * @param[in] callback_arg  Generic argument that will be provided to the callback when called, can be NULL
- * @return CY_RSLT_SUCCESS if interrupt was succesffuly enabled.
+ * @param[in] callback      The function to call when the specified event happens. Pass NULL to
+ *                          unregister the handler.
+ * @param[in] callback_arg  Generic argument that will be provided to the callback when called, can
+ *                          be NULL
+ * @return CY_RSLT_SUCCESS if interrupt was successfully enabled.
  */
-cy_rslt_t mtb_bmi160_config_int(mtb_bmi160_t *obj, struct bmi160_int_settg *intsettings, cyhal_gpio_t pin, uint8_t intr_priority, cyhal_gpio_event_t event, cyhal_gpio_event_callback_t callback, void *callback_arg);
+cy_rslt_t mtb_bmi160_config_int(mtb_bmi160_t* obj, struct bmi160_int_settg* intsettings,
+                                cyhal_gpio_t pin, uint8_t intr_priority, cyhal_gpio_event_t event,
+                                cyhal_gpio_event_callback_t callback, void* callback_arg);
 
 /**
  * Frees up any resources allocated by the motion_sensor as part of \ref mtb_bmi160_init_i2c().
  * @param[in] obj  Pointer to a BMI160 object.
-*/
-void mtb_bmi160_free(mtb_bmi160_t * obj);
+ */
+void mtb_bmi160_free(mtb_bmi160_t* obj);
 
 #if defined(__cplusplus)
 }

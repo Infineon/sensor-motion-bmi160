@@ -107,9 +107,9 @@ There is a known issue with the BMI160 endianness detection. Any code referencin
 Code snippets</h1>
 <h2><a class="anchor" id="subsection_board_libs_snippet_1"></a>
 Snippet 1: Simple initialization with I2C.</h2>
-<p>The following snippet initializes an I2C instance and the BMI160, then reads from the BMI160. </p><div class="fragment"><div class="line">    <span class="comment">/* Initialize I2C and BMI160 */</span></div><div class="line">    result = cyhal_i2c_init(&amp;i2c_instance, CY8CKIT_028_TFT_PIN_IMU_I2C_SDA, CY8CKIT_028_TFT_PIN_IMU_I2C_SCL, NULL);</div><div class="line">    result = <a class="code" href="group__group__board__libs.html#gac8f26d8dfa22eaef5a39303409133dfc">mtb_bmi160_init_i2c</a>(&amp;imu, &amp;i2c_instance, MTB_BMI160_DEFAULT_ADDRESS);</div><div class="line">    <span class="comment">/* Read data from BMI160 */</span></div><div class="line">    result = <a class="code" href="group__group__board__libs.html#ga6e259c8f5f575e06fc3d35c525b4038f">mtb_bmi160_read</a>(&amp;imu, &amp;imu_data);</div></div><!-- fragment --> <h2><a class="anchor" id="subsection_board_libs_snippet_2"></a>
+<p>The following snippet initializes an I2C instance and the BMI160, then reads from the BMI160. </p><div class="fragment"><div class="line">    <span class="comment">/* Initialize I2C and BMI160 */</span></div><div class="line">    result = cyhal_i2c_init(&amp;i2c_instance, PIN_IMU_I2C_SDA, PIN_IMU_I2C_SCL, NULL);</div><div class="line">    result = <a class="code" href="group__group__board__libs.html#gac8f26d8dfa22eaef5a39303409133dfc">mtb_bmi160_init_i2c</a>(&amp;imu, &amp;i2c_instance, MTB_BMI160_DEFAULT_ADDRESS);</div><div class="line">    <span class="comment">/* Read data from BMI160 */</span></div><div class="line">    result = <a class="code" href="group__group__board__libs.html#ga6e259c8f5f575e06fc3d35c525b4038f">mtb_bmi160_read</a>(&amp;imu, &amp;imu_data);</div></div><!-- fragment --> <h2><a class="anchor" id="subsection_board_libs_snippet_2"></a>
 Snippet 2: BMI160 interrupt configuration.</h2>
-<p>The following snippet demonstrates how to configure a BMI160 interrupt. </p><div class="fragment"><div class="line">    <span class="comment">/* Populate BMI160 interrupt configuration structure and configure interrupt */</span></div><div class="line">    <span class="keyword">struct </span>bmi160_int_settg intsettings;</div><div class="line">    cy_rslt_t result;</div><div class="line"></div><div class="line">    intsettings.int_channel = BMI160_INT_CHANNEL_1;</div><div class="line">    intsettings.int_type = BMI160_ACC_ANY_MOTION_INT;</div><div class="line">    intsettings.int_pin_settg.output_en = BMI160_ENABLE;</div><div class="line">    intsettings.int_pin_settg.output_mode = 0;</div><div class="line">    intsettings.int_pin_settg.output_type = 0;</div><div class="line">    intsettings.int_pin_settg.edge_ctrl = 1;</div><div class="line">    intsettings.int_pin_settg.input_en = 0;</div><div class="line">    intsettings.int_pin_settg.latch_dur = 0;</div><div class="line"></div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_en = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_x = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_y = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_z = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_dur = 0;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_thr = 20;</div><div class="line"></div><div class="line">    intsettings.fifo_full_int_en = 0;</div><div class="line">    intsettings.fifo_wtm_int_en = 0;</div><div class="line"></div><div class="line">    result = <a class="code" href="group__group__board__libs.html#gae3faebe4fcb363ab41d2f79a297ddf66">mtb_bmi160_config_int</a>(&amp;imu, &amp;intsettings, CY8CKIT_028_TFT_PIN_IMU_INT_1, CYHAL_ISR_PRIORITY_DEFAULT, CYHAL_GPIO_IRQ_FALL, (cyhal_gpio_event_callback_t) &amp;imucallback, NULL);</div></div><!-- fragment --><table class="memberdecls">
+<p>The following snippet demonstrates how to configure a BMI160 interrupt. </p><div class="fragment"><div class="line">    <span class="comment">/* Populate BMI160 interrupt configuration structure and configure interrupt */</span></div><div class="line">    <span class="keyword">struct </span>bmi160_int_settg intsettings;</div><div class="line">    cy_rslt_t result;</div><div class="line"></div><div class="line">    intsettings.int_channel = BMI160_INT_CHANNEL_1;</div><div class="line">    intsettings.int_type = BMI160_ACC_ANY_MOTION_INT;</div><div class="line">    intsettings.int_pin_settg.output_en = BMI160_ENABLE;</div><div class="line">    intsettings.int_pin_settg.output_mode = 0;</div><div class="line">    intsettings.int_pin_settg.output_type = 0;</div><div class="line">    intsettings.int_pin_settg.edge_ctrl = 1;</div><div class="line">    intsettings.int_pin_settg.input_en = 0;</div><div class="line">    intsettings.int_pin_settg.latch_dur = 0;</div><div class="line"></div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_en = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_x = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_y = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_z = 1;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_dur = 0;</div><div class="line">    intsettings.int_type_cfg.acc_any_motion_int.anymotion_thr = 20;</div><div class="line"></div><div class="line">    intsettings.fifo_full_int_en = 0;</div><div class="line">    intsettings.fifo_wtm_int_en = 0;</div><div class="line"></div><div class="line">    result = <a class="code" href="group__group__board__libs.html#gae3faebe4fcb363ab41d2f79a297ddf66">mtb_bmi160_config_int</a>(obj, &amp;intsettings, PIN_IMU_INT_1, CYHAL_ISR_PRIORITY_DEFAULT,</div><div class="line">                                   CYHAL_GPIO_IRQ_FALL, (cyhal_gpio_event_callback_t)&amp;imucallback,</div><div class="line">                                   NULL);</div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structmtb__bmi160__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__board__libs.html#structmtb__bmi160__t">mtb_bmi160_t</a></td></tr>
@@ -121,9 +121,9 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga6a782574f531667dbb853ad8e068cda8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__board__libs.html#ga6a782574f531667dbb853ad8e068cda8">CYHAL_BMI160_RSLT_ERR_ADDITIONAL_INT_PIN</a>&#160;&#160;&#160;(CYHAL_RSLT_CREATE(CY_RSLT_TYPE_ERROR, CY_RSLT_MODULE_BOARD_HARDWARE_BMI160, 0x100))</td></tr>
-<tr class="memdesc:ga6a782574f531667dbb853ad8e068cda8"><td class="mdescLeft">&#160;</td><td class="mdescRight">An attempt was made to configure too many gpio pins as interrupts.  <a href="#ga6a782574f531667dbb853ad8e068cda8">More...</a><br /></td></tr>
-<tr class="separator:ga6a782574f531667dbb853ad8e068cda8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4c405dbdb218b58c8f71afc6fde4bd57"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__board__libs.html#ga4c405dbdb218b58c8f71afc6fde4bd57">MTB_BMI160_RSLT_ERR_INSUFFICIENT_INT_PINS</a>&#160;&#160;&#160;(CY_RSLT_CREATE(CY_RSLT_TYPE_ERROR, CY_RSLT_MODULE_BOARD_HARDWARE_BMI160, 0x100))</td></tr>
+<tr class="memdesc:ga4c405dbdb218b58c8f71afc6fde4bd57"><td class="mdescLeft">&#160;</td><td class="mdescRight">An attempt was made to configure too many gpio pins as interrupts.  <a href="#ga4c405dbdb218b58c8f71afc6fde4bd57">More...</a><br /></td></tr>
+<tr class="separator:ga4c405dbdb218b58c8f71afc6fde4bd57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -141,6 +141,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gac8f26d8dfa22eaef5a39303409133dfc"><td class="memItemLeft" align="right" valign="top">cy_rslt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__board__libs.html#gac8f26d8dfa22eaef5a39303409133dfc">mtb_bmi160_init_i2c</a> (<a class="el" href="group__group__board__libs.html#structmtb__bmi160__t">mtb_bmi160_t</a> *obj, cyhal_i2c_t *inst, <a class="el" href="group__group__board__libs.html#gaa1ef72a83807270481aaa556892729bd">mtb_bmi160_address_t</a> address)</td></tr>
 <tr class="memdesc:gac8f26d8dfa22eaef5a39303409133dfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the IMU for I2C communication.  <a href="#gac8f26d8dfa22eaef5a39303409133dfc">More...</a><br /></td></tr>
 <tr class="separator:gac8f26d8dfa22eaef5a39303409133dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga33b3f4b1471c187743794e9c1025b46a"><td class="memItemLeft" align="right" valign="top">cy_rslt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__board__libs.html#ga33b3f4b1471c187743794e9c1025b46a">mtb_bmi160_init_spi</a> (<a class="el" href="group__group__board__libs.html#structmtb__bmi160__t">mtb_bmi160_t</a> *obj, cyhal_spi_t *inst, cyhal_gpio_t spi_ss)</td></tr>
+<tr class="memdesc:ga33b3f4b1471c187743794e9c1025b46a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the sensor for SPI communication.  <a href="#ga33b3f4b1471c187743794e9c1025b46a">More...</a><br /></td></tr>
+<tr class="separator:ga33b3f4b1471c187743794e9c1025b46a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae39ac49787bfd21ab9c2b1ebdfe03fd8"><td class="memItemLeft" align="right" valign="top">cy_rslt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__board__libs.html#gae39ac49787bfd21ab9c2b1ebdfe03fd8">mtb_bmi160_config_default</a> (<a class="el" href="group__group__board__libs.html#structmtb__bmi160__t">mtb_bmi160_t</a> *obj)</td></tr>
 <tr class="memdesc:gae39ac49787bfd21ab9c2b1ebdfe03fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the motion sensor to a default mode with both accelerometer &amp; gyroscope enabled with a nominal output data rate.  <a href="#gae39ac49787bfd21ab9c2b1ebdfe03fd8">More...</a><br /></td></tr>
 <tr class="separator:gae39ac49787bfd21ab9c2b1ebdfe03fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -226,14 +229,14 @@ Gyroscope data. </td></tr>
 </div>
 </div>
 <h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="ga6a782574f531667dbb853ad8e068cda8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6a782574f531667dbb853ad8e068cda8">&#9670;&nbsp;</a></span>CYHAL_BMI160_RSLT_ERR_ADDITIONAL_INT_PIN</h2>
+<a id="ga4c405dbdb218b58c8f71afc6fde4bd57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4c405dbdb218b58c8f71afc6fde4bd57">&#9670;&nbsp;</a></span>MTB_BMI160_RSLT_ERR_INSUFFICIENT_INT_PINS</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define CYHAL_BMI160_RSLT_ERR_ADDITIONAL_INT_PIN&#160;&#160;&#160;(CYHAL_RSLT_CREATE(CY_RSLT_TYPE_ERROR, CY_RSLT_MODULE_BOARD_HARDWARE_BMI160, 0x100))</td>
+          <td class="memname">#define MTB_BMI160_RSLT_ERR_INSUFFICIENT_INT_PINS&#160;&#160;&#160;(CY_RSLT_CREATE(CY_RSLT_TYPE_ERROR, CY_RSLT_MODULE_BOARD_HARDWARE_BMI160, 0x100))</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -298,6 +301,51 @@ Gyroscope data. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">obj</td><td>Pointer to a BMI160 object. The caller must allocate the memory for this object but the init function will initialize its contents. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">inst</td><td>I2C instance to use for communicating with the BMI160 sensor. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">address</td><td>BMI160 I2C address, set by hardware implementation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>CY_RSLT_SUCCESS if properly initialized, else an error indicating what went wrong. </dd></dl>
+
+</div>
+</div>
+<a id="ga33b3f4b1471c187743794e9c1025b46a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga33b3f4b1471c187743794e9c1025b46a">&#9670;&nbsp;</a></span>mtb_bmi160_init_spi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cy_rslt_t mtb_bmi160_init_spi </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__group__board__libs.html#structmtb__bmi160__t">mtb_bmi160_t</a> *&#160;</td>
+          <td class="paramname"><em>obj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">cyhal_spi_t *&#160;</td>
+          <td class="paramname"><em>inst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">cyhal_gpio_t&#160;</td>
+          <td class="paramname"><em>spi_ss</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize the sensor for SPI communication. </p>
+<p>Then applies the default configuration settings for the accelerometer &amp; gyroscope. NOTE: The SPI slave select pin (<code>spi_ss</code>) is expected to be controlled by this driver, not the SPI block itself. This allows the driver to issue multiple read/write requests back to back. See: <a class="el" href="group__group__board__libs.html#gae39ac49787bfd21ab9c2b1ebdfe03fd8">mtb_bmi160_config_default()</a> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">obj</td><td>Pointer to a BMI160 object. The caller must allocate the memory for this object but the init function will initialize its contents. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">inst</td><td>SPI instance to use for communicating with the BMI160 sensor. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">spi_ss</td><td>SPI slave select pin to use for communicating with the BMI160 sensor. </td></tr>
   </table>
   </dd>
 </dl>
@@ -493,7 +541,7 @@ Gyroscope data. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>CY_RSLT_SUCCESS if interrupt was succesffuly enabled. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>CY_RSLT_SUCCESS if interrupt was successfully enabled. </dd></dl>
 
 </div>
 </div>

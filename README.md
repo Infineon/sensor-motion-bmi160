@@ -2,7 +2,7 @@
 
 ### Overview
 
-This library provides functions for interfacing with the BMI-160 I2C/SPI 16-bit Inertial Measurement Unit with three axis accelerometer and three axis gyroscope as used on the CY8CKIT-028-TFT and CY8CKIT-028-TFT shields.
+This library provides functions for interfacing with the BMI-160 I2C/SPI 16-bit Inertial Measurement Unit with three axis accelerometer and three axis gyroscope as used on the CY8CKIT-028-EPD and CY8CKIT-028-TFT shields.
 
 Data Sheet: https://www.bosch-sensortec.com/products/motion-sensors/imus/bmi160.html
 GitHub: https://github.com/BoschSensortec/BMI160_driver
@@ -82,4 +82,4 @@ int main(void)
 * [PSoC 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
 ---
-© Cypress Semiconductor Corporation, 2019-2020.
+© Cypress Semiconductor Corporation, 2019-2021.
