@@ -4,7 +4,9 @@
  * Description: This file is the public interface of the BMI160 motion sensor.
  ***************************************************************************************************
  * \copyright
- * Copyright 2018-2021 Cypress Semiconductor Corporation
+ * Copyright 2018-2021 Cypress Semiconductor Corporation (an Infineon company) or
+ * an affiliate of Cypress Semiconductor Corporation
+ *
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,12 +67,26 @@ extern "C"
 {
 #endif
 
-/** Structure holding the IMU instance specific information. */
+/** \cond INTERNAL */
+#if (CYHAL_API_VERSION >= 2)
+typedef cyhal_gpio_callback_data_t  _mtb_bmi160_interrupt_pin_t;
+#else
+typedef cyhal_gpio_t                _mtb_bmi160_interrupt_pin_t;
+#endif
+/** \endcond */
+
+/**
+ * Structure holding the IMU instance specific information.
+ *
+ * Application code should not rely on the specific content of this struct.
+ * They are considered an implementation detail which is subject to change
+ * between platforms and/or library releases.
+ */
 typedef struct
 {
-    struct bmi160_dev sensor;
-    cyhal_gpio_t      intpin1;
-    cyhal_gpio_t      intpin2;
+    struct bmi160_dev           sensor;
+    _mtb_bmi160_interrupt_pin_t intpin1;
+    _mtb_bmi160_interrupt_pin_t intpin2;
 } mtb_bmi160_t;
 
 /** Structure holding the accelerometer and gyroscope data read from the device. */
