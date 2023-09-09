@@ -9,6 +9,8 @@ This library provides functions for interfacing with the BMI-160 I2C/SPI 16-bit 
 * API for testing IMU
 
 ### What Changed?
+#### v1.1.2
+* Fixed a bug that could cause pointer corruption when using ISRs
 #### v1.1.1
 * Added support for using with HAL v1 or v2
 #### v1.1.0
@@ -42,4 +44,4 @@ Minimum required ModusToolbox™ Software Environment: v2.0
 * [PSoC™ 6 Resources - KBA223067](https://community.cypress.com/docs/DOC-14644)
 
 ---
-© Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2019-2021.
+© Cypress Semiconductor Corporation (an Infineon company) or an affiliate of Cypress Semiconductor Corporation, 2019-2023.

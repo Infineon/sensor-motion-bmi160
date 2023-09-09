@@ -1,0 +1,7 @@
+{
+    "core": {
+        "id": "bd4727ce-0ba5-5050-9e9f-a6bbf82a4e19",
+        "name": "sensor-motion-bmi160",
+        "version": "1.1.2.34929"
+    }
+}

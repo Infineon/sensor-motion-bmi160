@@ -6,7 +6,7 @@
  *
  ***************************************************************************************************
  * \copyright
- * Copyright 2018-2021 Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2018-2022 Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -39,14 +39,15 @@ extern "C"
 #define I2C_WRITE_BUFFER_LENGTH   32
 #define SOFT_RESET_DELAY_US       300
 
-static cyhal_i2c_t* i2c = NULL;
-static cyhal_spi_t* spi = NULL;
-static cyhal_gpio_t spi_ssel = NC;
+static cyhal_i2c_t* _bmi160_i2c = NULL;
+static cyhal_spi_t* _bmi160_spi = NULL;
+static cyhal_gpio_t _bmi160_spi_ssel = NC;
 
 //--------------------------------------------------------------------------------------------------
-// i2c_write_bytes
+// _bmi160_i2c_write_bytes
 //--------------------------------------------------------------------------------------------------
-static int8_t i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint16_t len)
+static int8_t _bmi160_i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data,
+                                      uint16_t len)
 {
     CY_ASSERT((len + 1) < I2C_WRITE_BUFFER_LENGTH);
     uint8_t buf[I2C_WRITE_BUFFER_LENGTH];
@@ -56,7 +57,7 @@ static int8_t i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data,
         buf[i+1] = data[i];
     }
 
-    cy_rslt_t result = cyhal_i2c_master_write(i2c, dev_addr, buf, len+1, I2C_TIMEOUT, true);
+    cy_rslt_t result = cyhal_i2c_master_write(_bmi160_i2c, dev_addr, buf, len+1, I2C_TIMEOUT, true);
 
     return (CY_RSLT_SUCCESS == result)
         ? BMI160_OK
@@ -65,15 +66,17 @@ static int8_t i2c_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data,
 
 
 //--------------------------------------------------------------------------------------------------
-// i2c_read_bytes
+// _bmi160_i2c_read_bytes
 //--------------------------------------------------------------------------------------------------
-static int8_t i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint16_t len)
+static int8_t _bmi160_i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data,
+                                     uint16_t len)
 {
-    cy_rslt_t result = cyhal_i2c_master_write(i2c, dev_addr, &reg_addr, 1, I2C_TIMEOUT, false);
+    cy_rslt_t result = cyhal_i2c_master_write(_bmi160_i2c, dev_addr, &reg_addr, 1, I2C_TIMEOUT,
+                                              false);
 
     if (CY_RSLT_SUCCESS == result)
     {
-        result = cyhal_i2c_master_read(i2c, dev_addr, data, len, I2C_TIMEOUT, true);
+        result = cyhal_i2c_master_read(_bmi160_i2c, dev_addr, data, len, I2C_TIMEOUT, true);
     }
 
     return (CY_RSLT_SUCCESS == result)
@@ -83,21 +86,22 @@ static int8_t i2c_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, 
 
 
 //--------------------------------------------------------------------------------------------------
-// spi_write_bytes
+// _bmi160_spi_write_bytes
 //--------------------------------------------------------------------------------------------------
-static int8_t spi_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint16_t len)
+static int8_t _bmi160_spi_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data,
+                                      uint16_t len)
 {
     CY_UNUSED_PARAMETER(dev_addr);
     cy_rslt_t result = CY_RSLT_SUCCESS;
 
-    cyhal_gpio_write(spi_ssel, 0);
-    result |= cyhal_spi_send(spi, reg_addr);
+    cyhal_gpio_write(_bmi160_spi_ssel, 0);
+    result |= cyhal_spi_send(_bmi160_spi, reg_addr);
 
     for (uint16_t i = 0; i < len; i++)
     {
-        result |= cyhal_spi_send(spi, data[i]);
+        result |= cyhal_spi_send(_bmi160_spi, data[i]);
     }
-    cyhal_gpio_write(spi_ssel, 1);
+    cyhal_gpio_write(_bmi160_spi_ssel, 1);
 
     return (CY_RSLT_SUCCESS == result)
         ? BMI160_OK
@@ -106,24 +110,25 @@ static int8_t spi_write_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data,
 
 
 //--------------------------------------------------------------------------------------------------
-// spi_read_bytes
+// _bmi160_spi_read_bytes
 //--------------------------------------------------------------------------------------------------
-static int8_t spi_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data, uint16_t len)
+static int8_t _bmi160_spi_read_bytes(uint8_t dev_addr, uint8_t reg_addr, uint8_t* data,
+                                     uint16_t len)
 {
     CY_UNUSED_PARAMETER(dev_addr);
     cy_rslt_t result = CY_RSLT_SUCCESS;
     uint8_t value = reg_addr | 0x80;
 
-    cyhal_gpio_write(spi_ssel, 0);
-    result |= cyhal_spi_send(spi, value);
+    cyhal_gpio_write(_bmi160_spi_ssel, 0);
+    result |= cyhal_spi_send(_bmi160_spi, value);
 
     for (uint16_t i = 0; i < len; i++)
     {
         uint32_t val;
-        result |= cyhal_spi_recv(spi, &val);
+        result |= cyhal_spi_recv(_bmi160_spi, &val);
         data[i] = (uint8_t)val;
     }
-    cyhal_gpio_write(spi_ssel, 1);
+    cyhal_gpio_write(_bmi160_spi_ssel, 1);
 
     return (CY_RSLT_SUCCESS == result)
         ? BMI160_OK
@@ -190,8 +195,8 @@ static cy_rslt_t _mtb_bmi160_config_int(_mtb_bmi160_interrupt_pin_t* intpin, cyh
 
     if (NULL == callback)
     {
-        _mtb_bmi160_set_pin(intpin, NC);
         cyhal_gpio_free(pin);
+        _mtb_bmi160_set_pin(intpin, NC);
     }
     else
     {
@@ -223,13 +228,13 @@ static cy_rslt_t _mtb_bmi160_config_int(_mtb_bmi160_interrupt_pin_t* intpin, cyh
 cy_rslt_t mtb_bmi160_init_i2c(mtb_bmi160_t* obj, cyhal_i2c_t* inst, mtb_bmi160_address_t address)
 {
     CY_ASSERT(inst != NULL);
-    i2c = inst;
+    _bmi160_i2c = inst;
 
     // Configure the BMI160 structure
     obj->sensor.id        = address;
     obj->sensor.intf      = BMI160_I2C_INTF;
-    obj->sensor.read      = (bmi160_read_fptr_t)i2c_read_bytes;
-    obj->sensor.write     = (bmi160_write_fptr_t)i2c_write_bytes;
+    obj->sensor.read      = (bmi160_read_fptr_t)_bmi160_i2c_read_bytes;
+    obj->sensor.write     = (bmi160_write_fptr_t)_bmi160_i2c_write_bytes;
     obj->sensor.delay_ms  = delay_wrapper;
     _mtb_bmi160_set_pin(&(obj->intpin1), NC);
     _mtb_bmi160_set_pin(&(obj->intpin2), NC);
@@ -250,14 +255,14 @@ cy_rslt_t mtb_bmi160_init_spi(mtb_bmi160_t* obj, cyhal_spi_t* inst, cyhal_gpio_t
 {
     CY_ASSERT(inst != NULL);
     CY_ASSERT(NC != spi_ss);
-    spi = inst;
-    spi_ssel = spi_ss;
+    _bmi160_spi = inst;
+    _bmi160_spi_ssel = spi_ss;
 
     /* Configure the BMI160 structure */
     obj->sensor.id        = 0;
     obj->sensor.intf      = BMI160_SPI_INTF;
-    obj->sensor.read      = (bmi160_read_fptr_t)spi_read_bytes;
-    obj->sensor.write     = (bmi160_write_fptr_t)spi_write_bytes;
+    obj->sensor.read      = (bmi160_read_fptr_t)_bmi160_spi_read_bytes;
+    obj->sensor.write     = (bmi160_write_fptr_t)_bmi160_spi_write_bytes;
     obj->sensor.delay_ms  = delay_wrapper;
     _mtb_bmi160_set_pin(&(obj->intpin1), NC);
     _mtb_bmi160_set_pin(&(obj->intpin2), NC);
@@ -409,7 +414,7 @@ void mtb_bmi160_free(mtb_bmi160_t* obj)
         _mtb_bmi160_free_pin(obj->intpin2);
     }
 
-    i2c = NULL;
+    _bmi160_i2c = NULL;
 }
 
 
